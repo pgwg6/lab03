@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.CodeAnalysis.Options;
@@ -34,14 +35,31 @@ namespace lab03
             services.AddSingleton(typeof(IUsersService), new UsersService());
             services.AddSingleton(typeof(IBooksService), new BooksService());
 
-            //https://localhost:5001/api/signingoogle
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => options.ForwardChallenge = "Google")
-                .AddGoogle(options => {
+            ////https://localhost:5001/api/signingoogle
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(options => options.ForwardChallenge = "Google")
+            //    .AddGoogle(options => {
+            //    options.ClientId = "211669332408-5v5f0lfe924ccriqgibsppm707gs7pmt.apps.googleusercontent.com";
+            //    options.ClientSecret = "NiLLHIWUiPKmddwGzExbGfNm";
+            //    }
+            //);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddGoogle(options =>
+            {
                 options.ClientId = "211669332408-5v5f0lfe924ccriqgibsppm707gs7pmt.apps.googleusercontent.com";
                 options.ClientSecret = "NiLLHIWUiPKmddwGzExbGfNm";
-                }
-            );
+            })
+            .AddCookie(options =>
+            {
+                options.Cookie.HttpOnly = false;
+                options.Cookie.SameSite = SameSiteMode.None;
+            });
 
             services.AddControllers();
         }
