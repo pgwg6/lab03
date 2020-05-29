@@ -27,7 +27,6 @@ namespace lab03.Controllers
         // POST: api/Rent
         // BODY:
         //  {
-        //      "userid": 5,
         //      "bookid": 3
         //  }
         [HttpPost]
@@ -35,7 +34,7 @@ namespace lab03.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult AddRent(Rent rent)
         {
-            var user = _UsersService.GetById(rent.UserId);
+            var user = _UsersService.AddUser(this.User);
             var book = _BooksService.GetById(rent.BookId);
 
             if (user == null || book == null)
@@ -59,14 +58,6 @@ namespace lab03.Controllers
             return Ok();
         }
 
-        // GET: api/Rent
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get()
-        {
-            return Ok(_BooksService.GetRentedBooks().Keys);
-        }
-
         // GET: api/Rent/User/5
         [Route("User/{id}")]
         [HttpGet("{id}")]
@@ -74,8 +65,8 @@ namespace lab03.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetByUserId(int id)
         {
-            var u = _UsersService.GetById(id);
-            if (u == null)
+            var user = _UsersService.GetById(id);
+            if (user == null)
                 return NotFound("User not found");
 
             var books = _BooksService.GetRentedBooks()
@@ -85,6 +76,25 @@ namespace lab03.Controllers
 
             return Ok(books);
         }
+
+        // GET: api/Rent/User
+        [Route("User")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetByUserId()
+        {
+            var user = _UsersService.AddUser(this.User);
+            if (user == null)
+                return NotFound("User not found");
+
+            var books = _BooksService.GetRentedBooks()
+                .Where(r => r.Value.ID == user.ID)
+                .Select(r => r.Key)
+                .ToArray();
+
+            return Ok(books);
+        }
+
 
         // GET: api/Rent/Book/5
         [Route("Book/{id}")]

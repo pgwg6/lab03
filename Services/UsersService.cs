@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace lab03
@@ -25,6 +26,34 @@ namespace lab03
 
             users.Add(user);
             return true;
+        }
+
+        private readonly string ClaimTypeID = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+        private readonly string ClaimTypeName = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname";
+        private readonly string ClaimTypeSurname = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname";
+        private readonly string ClaimTypeEMail = @"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress";
+
+        public User? AddUser(ClaimsPrincipal user)
+        {
+            // NOTE : Hackish way to parse Google's id to internal id
+            var idStr = user.Claims.FirstOrDefault(c => c.Type == ClaimTypeID).Value.TakeLast(9).ToArray();
+            bool parsed = int.TryParse(idStr, out int id);
+
+            if (!parsed)
+                return null;
+
+            var u = GetById(id);
+            if (u != null)
+                return u;
+
+            u = new User();
+            u.ID = id;
+            u.Name = user.Claims.FirstOrDefault(c => c.Type == ClaimTypeName).Value;
+            u.Surname = user.Claims.FirstOrDefault(c => c.Type == ClaimTypeSurname).Value;
+            u.EMail = user.Claims.FirstOrDefault(c => c.Type == ClaimTypeEMail).Value;
+
+            users.Add(u);
+            return u;
         }
 
         public bool Delete(int id)
