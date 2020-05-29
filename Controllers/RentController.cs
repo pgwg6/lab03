@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using lab03.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace lab03.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    [EnableCors("AllowOnlyLocally")]
     public class RentController : ControllerBase
     {
         private IUsersService _UsersService;

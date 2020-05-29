@@ -52,6 +52,11 @@ namespace lab03
             });
 
             services.AddControllers();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowOnlyLocally", p=> p.WithOrigins("https://localhost:5001"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +72,8 @@ namespace lab03
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseCors("AllowOnlyLocally");
 
             app.UseEndpoints(endpoints =>
             {
