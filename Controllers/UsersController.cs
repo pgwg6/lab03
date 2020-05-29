@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using lab03.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace lab03.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private IUsersService _UsersService;

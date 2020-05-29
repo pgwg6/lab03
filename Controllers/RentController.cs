@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using lab03.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace lab03.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RentController : ControllerBase
     {
         private IUsersService _UsersService;
